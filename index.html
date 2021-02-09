@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Puzzle</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            border: none;
+            outline: none;
+
+        }
+
+        .puzzlecont {
+            width: 1024px;
+            height: 768px;
+            background-repeat: no-repeat;
+
+        }
+
+        .puzzle {
+            display: block;
+            float: left;
+            background-repeat: no-repeat;
+            cursor: url('tap.png'), auto;
+
+        }
+
+        .ui-draggable-dragging {
+            position: relative;
+            z-index: 9999;
+        }
+
+        .ui-droppable-hover>div {
+            opacity: 0.5;
+        }
+
+        .drp {
+            float: left;
+            display: block;
+        }
+
+        #pic {
+            float: right;
+            max-width: 400px;
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script>
+
+        $(document).ready(function () {
+
+            let sor = 4;
+            let randmax = 1000;
+
+            let width = $('.puzzlecont').width();
+            let height = $('.puzzlecont').height();
+
+            let puzzlew = width / sor;
+            let puzzleh = height / sor;
+
+            let img = $('#pic').attr('src');
+            let cont = "";
+            let n = 0;
+            for (j = 0; j < sor; j++) {
+                for (i = 0; i < sor; i++) {
+                    let random = Math.floor(Math.random() * randmax);
+
+
+                    let pv = i * puzzlew;
+                    let pf = j * puzzleh;
+                    cont += `<div class="drp" id="pr${(n)}" style="width: ${puzzlew}px; height: ${puzzleh}px;">
+                    <div data-pid="${random}" data-pido="${random}" class="puzzle" style="background-position: -${pv}px -${pf}px; 
+                     background-image: url('${img}'); width: ${puzzlew}px; height: ${puzzleh}px;">
+                    </div>
+                    </div>`;
+                    n++;
+                }
+            }
+            $('.puzzlecont').html(cont);
+
+            let poz = 0;
+            for (let h = 0; h <= randmax; h++) {
+
+                console.log("h", h);
+                var currentdiv = $('div[data-pid="' + h + '"]');
+                var j = 0;
+                console.log("talalat: data-pid=", h, currentdiv);
+
+                currentdiv.each(function () {
+                    $(this).removeData('pid');
+                    $(this).attr('data-pid', poz);
+                    let todiv = $('#pr' + poz);
+                    $(this).appendTo(todiv);
+                    poz++;
+                });
+
+            }
+
+            $(".puzzle").draggable({
+                revert: true,
+                revertDuration: 0
+            });
+            $(".drp").droppable({
+                accept: ".puzzle",
+                drop: function (event, ui) {
+
+                    $(ui.draggable).after($(this).find('div'));
+
+                    $(this).append(ui.draggable);
+                }
+            });
+
+        });
+
+    </script>
+</head>
+
+<body>
+    <img id="pic" src="https://loremflickr.com/1024/768/animal" />
+    <div class="puzzlecont"></div>
+</body>
+
+</html>
+
